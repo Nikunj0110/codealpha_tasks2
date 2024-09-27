@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f4f4f4;
+}
+
+.calculator {
+    border: 1px solid #888;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.calculator-screen {
+    width: 100%;
+    height: 50px;
+    background-color: #252525;
+    color: white;
+    text-align: right;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-size: 2rem;
+}
+
+.calculator-keys {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+button {
+    width: 100%;
+    padding: 20px;
+    font-size: 1.5rem;
+    border: none;
+    border-radius: 10px;
+    background-color: #f2f2f2;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #d4d4d4;
+}
+
+button.operator {
+    background-color: #f39c12;
+    color: white;
+}
+
+button.operator:hover {
+    background-color: #e67e22;
+}
+
+button.equal-sign {
+    background-color: #27ae60;
+    color: white;
+    grid-column: span 2;
+}
+
+button.equal-sign:hover {
+    background-color: #2ecc71;
+}
+
+button.all-clear {
+    background-color: #e74c3c;
+    color: white;
+    grid-column: span 2;
+}
+
+button.all-clear:hover {
+    background-color: #c0392b;
+}
+
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <input type="text" class="calculator-screen" value="" disabled />
+        <div class="calculator-keys">
+            <button type="button" class="operator" value="+">+</button>
+            <button type="button" class="operator" value="-">−</button>
+            <button type="button" class="operator" value="*">&times;</button>
+            <button type="button" class="operator" value="/">&divide;</button>
+
+            <button type="button" value="7">7</button>
+            <button type="button" value="8">8</button>
+            <button type="button" value="9">9</button>
+
+            <button type="button" value="4">4</button>
+            <button type="button" value="5">5</button>
+            <button type="button" value="6">6</button>
+
+            <button type="button" value="1">1</button>
+            <button type="button" value="2">2</button>
+            <button type="button" value="3">3</button>
+
+            <button type="button" value="0">0</button>
+            <button type="button" value=".">.</button>
+            <button type="button" class="equal-sign" value="=">=</button>
+            <button type="button" class="all-clear" value="all-clear">AC</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+<script>
+    class Calculator {
+    constructor() {
+        this.screen = document.querySelector('.calculator-screen');
+        this.clear();
+    }
+
+    clear() {
+        this.currentValue = '';
+        this.previousValue = '';
+        this.operator = null;
+        this.updateScreen();
+    }
+
+    appendNumber(number) {
+        if (number === '.' && this.currentValue.includes('.')) return;
+        this.currentValue = this.currentValue.toString() + number.toString();
+        this.updateScreen();
+    }
+
+    chooseOperator(operator) {
+        if (this.currentValue === '') return;
+        if (this.previousValue !== '') {
+            this.calculate();
+        }
+        this.operator = operator;
+        this.previousValue = this.currentValue;
+        this.currentValue = '';
+    }
+
+    calculate() {
+        let result;
+        const prev = parseFloat(this.previousValue);
+        const current = parseFloat(this.currentValue);
+        if (isNaN(prev) || isNaN(current)) return;
+        switch (this.operator) {
+            case '+':
+                result = prev + current;
+                break;
+            case '-':
+                result = prev - current;
+                break;
+            case '*':
+                result = prev * current;
+                break;
+            case '/':
+                result = prev / current;
+                break;
+            default:
+                return;
+        }
+        this.currentValue = result;
+        this.operator = null;
+        this.previousValue = '';
+        this.updateScreen();
+    }
+
+    updateScreen() {
+        this.screen.value = this.currentValue;
+    }
+
+    handleEqual() {
+        this.calculate();
+    }
+}
+
+const calculator = new Calculator();
+
+const numberButtons = document.querySelectorAll('button:not(.operator):not(.equal-sign):not(.all-clear)');
+const operatorButtons = document.querySelectorAll('.operator');
+const equalButton = document.querySelector('.equal-sign');
+const allClearButton = document.querySelector('.all-clear');
+
+numberButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        calculator.appendNumber(button.value);
+    });
+});
+
+operatorButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        calculator.chooseOperator(button.value);
+    });
+});
+
+equalButton.addEventListener('click', () => {
+    calculator.handleEqual();
+});
+
+allClearButton.addEventListener('click', () => {
+    calculator.clear();
+});
+
+</script>
